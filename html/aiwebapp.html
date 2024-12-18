@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .game-container {
+            text-align: center;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 50px);
+            gap: 5px;
+            margin: 20px auto;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-transform: uppercase;
+            background-color: white;
+        }
+        .cell.correct {
+            background-color: #6aaa64;
+            color: white;
+        }
+        .cell.present {
+            background-color: #c9b458;
+            color: white;
+        }
+        .cell.absent {
+            background-color: #787c7e;
+            color: white;
+        }
+        input {
+            font-size: 1em;
+            padding: 10px;
+            width: 250px;
+            margin-top: 20px;
+        }
+        button {
+            font-size: 1em;
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Wordle Game</h1>
+        <div id="grid" class="grid"></div>
+        <input id="guessInput" type="text" maxlength="5" placeholder="Enter your guess" />
+        <button id="guessButton">Submit</button>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        const words = ["apple", "grape", "berry", "peach", "melon", "mango", "lemon", "plums", "cherry", "pearl"];
+        const solution = words[Math.floor(Math.random() * words.length)]; // Randomly select a word
+        const grid = document.getElementById('grid');
+        const guessInput = document.getElementById('guessInput');
+        const guessButton = document.getElementById('guessButton');
+        const message = document.getElementById('message');
+        let currentRow = 0;
+
+        // Create the grid dynamically
+        for (let i = 0; i < 30; i++) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            grid.appendChild(cell);
+        }
+
+        guessButton.addEventListener('click', () => {
+            const guess = guessInput.value.toLowerCase();
+
+            // Validate the guess length
+            if (guess.length !== 5) {
+                message.textContent = "Please enter a 5-letter word.";
+                return;
+            }
+
+            const rowStart = currentRow * 5;
+            const rowCells = Array.from(grid.children).slice(rowStart, rowStart + 5);
+
+            // Fill in the cells with the guess and apply styles
+            rowCells.forEach((cell, index) => {
+                cell.textContent = guess[index];
+                if (guess[index] === solution[index]) {
+                    cell.classList.add('correct');
+                } else if (solution.includes(guess[index])) {
+                    cell.classList.add('present');
+                } else {
+                    cell.classList.add('absent');
+                }
+            });
+
+            // Check for correct guess or end of game
+            if (guess === solution) {
+                message.textContent = "Congratulations! You've guessed the word!";
+                guessInput.disabled = true;
+                guessButton.disabled = true;
+            } else if (currentRow === 5) {
+                message.textContent = `Game over! The word was "${solution}".`;
+                guessInput.disabled = true;
+                guessButton.disabled = true;
+            } else {
+                currentRow++;
+                guessInput.value = ""; // Clear the input field
+                guessInput.focus(); // Focus back on input for the next guess
+            }
+        });
+    </script>
+</body>
+</html>
+
+
